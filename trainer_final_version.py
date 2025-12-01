@@ -11,7 +11,7 @@ tf.config.threading.set_inter_op_parallelism_threads(4)
 
 import tensorflow as tf
 
-# 📦 Configuração
+# Configuração
 IMAGE_SIZE = (256, 256)                     # Dimensões da imagem de entrada (altura, largura)
 BATCH_SIZE = 24                             # Número de imagens processadas por passo de treinamento
 EPOCHS_INITIAL = 70                         # Épocas para a fase inicial de treinamento
@@ -40,7 +40,7 @@ def focal_loss_multiclass(y_true, y_pred, alpha=0.25, gamma=3.0):
     loss = alpha_factor * modulating_factor * ce             
     return tf.reduce_mean(loss)                              
 
-# 📁 Carregamento e pré-processamento do dataset
+# Carregamento e pré-processamento do dataset
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     DATA_DIR,
     validation_split=VALIDATION_SPLIT_CF,
@@ -62,20 +62,20 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
 class_names = train_ds.class_names                      # Lista de rótulos de classes
 AUTOTUNE = tf.data.AUTOTUNE                             # Ajuste automático de desempenho para o pipeline de dados
 
-# 🏎️ Pipeline de treinamento com mapeamento multi-thread
+# Pipeline de treinamento com mapeamento multi-thread
 train_ds = train_ds.cache()                             # Cache dos dados em memória para evitar recarregamento a cada época
 train_ds = train_ds.shuffle(1000)                       # Embaralhar dados de treinamento para melhor generalização
 train_ds = train_ds.map(lambda x, y: (x, y),            # Mapeamento identidade (placeholder para pré-processamento)
                         num_parallel_calls=AUTOTUNE)    # Usar múltiplas threads automaticamente
 train_ds = train_ds.prefetch(buffer_size=AUTOTUNE)      # Sobrepor pré-processamento e execução do modelo para desempenho
 
-# 🏎️ Pipeline de validação com mapeamento multi-thread
+# Pipeline de validação com mapeamento multi-thread
 val_ds = val_ds.cache()                                 # Cache dos dados de validação em memória
 val_ds = val_ds.map(lambda x, y: (x, y),                # Mapeamento identidade (placeholder para pré-processamento)
                     num_parallel_calls=AUTOTUNE)        # Chamadas paralelas multi-thread
 val_ds = val_ds.prefetch(buffer_size=AUTOTUNE)          # Prefetch para carregamento eficiente
 
-# 🎨 Aumento de dados (aplicado apenas durante o treinamento)
+# Aumento de dados (aplicado apenas durante o treinamento)
 data_augmentation = tf.keras.Sequential([
     layers.RandomFlip("horizontal_and_vertical"),  
     layers.RandomRotation(0.2),                    
@@ -86,7 +86,7 @@ data_augmentation = tf.keras.Sequential([
     layers.GaussianNoise(0.05)                     
 ])
 
-# 🧠 Modelo CNN personalizado
+# Modelo CNN personalizado
 model = models.Sequential([
     data_augmentation,                                      
     layers.Rescaling(1./255, input_shape=(IMAGE_SIZE, 3)),  # Normalizar valores de pixels
@@ -180,5 +180,5 @@ model.fit(
                reduce_lr_secondary]  
 )
 
-# 💾 Salvar modelo treinado
+# Salvar modelo treinado
 model.save('trash_classifier_model_finetuned.keras')

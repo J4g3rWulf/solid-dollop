@@ -19,9 +19,9 @@ for root, dirs, files in os.walk(DATA_DIR):
 
                 img_padded = ImageOps.pad(img, TARGET_SIZE, color="white")
 
-                # Overwrite original file
+                # Sobreescreve arquivo original
                 img_padded.save(filepath, quality=90)
-                print(f"Processed: {filepath}")
+                print(f"Processando: {filepath}")
             except Exception as e:
-                print(f"Error processing {filepath}: {e}")
+                print(f"Erro processsando {filepath}: {e}")
 
